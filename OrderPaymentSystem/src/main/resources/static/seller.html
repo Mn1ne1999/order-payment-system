@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Менеджер — M_n1ne</title>
+    <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+<header class="admin-header">
+    <div class="logo">M_n1ne</div>
+    <nav>
+        <a href="index.html">🏠 Главная</a>
+        <a href="#" onclick="logout()">🚪 Выход</a>
+    </nav>
+</header>
+
+<main class="admin-panel">
+    <h2>🛒 Мои товары</h2>
+    <div class="product-form">
+        <input type="text" id="name" placeholder="Название" />
+        <input type="text" id="description" placeholder="Описание" />
+        <input type="number" id="price" placeholder="Цена" />
+        <input type="number" id="stock" placeholder="Кол-во на складе" />
+        <input type="text" id="imageUrl" placeholder="Ссылка на изображение" />
+        <select id="categoryId"></select>
+        <label><input type="checkbox" id="available" checked /> Доступен</label>
+        <button onclick="addSellerProduct()">➕ Добавить товар</button>
+    </div>
+
+    <table>
+        <thead>
+        <tr><th>ID</th><th>Название</th><th>Категория</th><th>Цена</th><th>Действия</th></tr>
+        </thead>
+        <tbody id="sellerProductTableBody"></tbody>
+    </table>
+</main>
+
+<script src="js/seller.js"></script>
+</body>
+</html>

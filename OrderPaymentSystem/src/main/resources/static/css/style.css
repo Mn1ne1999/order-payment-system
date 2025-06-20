@@ -1,0 +1,433 @@
+/* =========================================================================
+   GLOBAL
+===========================================================================*/
+*{box-sizing:border-box}
+:root{
+  --brand-blue:#068ff9;
+  --header-h:80px;      /* фактическая высота шапки  */
+  --header-gap:30px;    /* зазор-“парение” под верхом */
+}
+
+html,body{
+  margin:0; padding:0;
+  font-family:'Roboto',sans-serif;
+  background:#000 url('../images/mn1ne-banner.png') center/cover no-repeat fixed;
+  overflow-x:hidden;
+}
+
+/* =========================================================================
+   HERO-БЛОК (обёртка страницы)
+   Padding-top = запас под шапку (она всегда поверх контента)
+===========================================================================*/
+.hero{
+  position:relative;
+  padding-top:calc(var(--header-h) + var(--header-gap));
+}
+
+/* =========================================================================
+   HEADER  (из «плавающей» становится «липкой»)
+===========================================================================*/
+#mainHeader{
+  position:absolute;
+  top:var(--header-gap);          /* 30px */
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 60px);
+  max-width:1240px;
+  height:var(--header-h);         /* 80px */
+  z-index:10000;
+  padding:18px 28px;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);
+  border-radius:14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.45);
+   transition:
+          transform      .30s ease,
+          max-width      .30s ease,
+          width          .30s ease,
+          border-radius  .30s ease,
+          background     .20s ease,
+          box-shadow     .30s ease;
+
+}
+
+/* липкая стадия – класс добавляется скриптом */
+#mainHeader.sticky{
+  position:fixed;
+  top:0; left:0; transform:none;      /* растягиваем */
+  width:100%; max-width:none;
+  border-radius:0;
+  background:#000;
+  box-shadow:0 4px 14px rgba(0,0,0,.55);
+}
+
+/* ---------------- inner layout ---------------- */
+.header-inner{
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; width:100%;
+}
+
+/* ── перестраиваем внутреннюю раскладку ТОЛЬКО в липком режиме ── */
+#mainHeader.sticky .header-inner{
+  display:grid;
+  grid-template-columns: auto 1fr auto; /* ① логотип | ② поиск | ③ навигация */
+  align-items:center;
+  gap:28px;
+}
+
+/* логотип остаётся прижат слева автоматически */
+
+/* поиск точно по центру */
+#mainHeader.sticky .search-bar{
+     justify-self:center;
+     width:100%;
+     max-width:900px;   /* поставьте сколько нужно */
+     margin:0 32px;
+}
+
+/* навигация вправо */
+#mainHeader.sticky nav.main-nav{
+  justify-self:end;        /* третий столбец */
+}
+
+/* чтобы поиск и навигация не «прилипали» к краям на узких экранах */
+@media (max-width:600px){
+  #mainHeader.sticky .header-inner{
+    grid-template-columns:auto auto;       /* две колонки: логотип + бургер/иконка поиска, если нужно */
+  }
+}
+
+/* Логотип */
+.logo{
+  font-size:28px; font-weight:bold; color:var(--brand-blue); text-decoration:none;
+  flex-shrink:0;
+}
+
+/* ---------- ПОИСК ---------- */
+.search-bar{
+    /* растягиваем блок между логотипом и навигацией */
+    display:flex;
+    flex:1 1 0;          /* ← “резиновая” ширина */
+    max-width:720px;     /* но не бесконечно большая */
+    margin:0 20px;
+}
+
+.search-bar input{
+    flex:1 1 0;          /* занимает всё свободное внутри формы */
+    min-width:140px;
+    padding:10px 15px;
+    font-size:16px;
+    border:none;
+    border-radius:6px 0 0 6px;
+    outline:none;
+}
+
+.search-bar button{
+    /* фикс-ширина под иконку/текст, чтобы не сжималась */
+    flex:0 0 54px;
+    background:var(--brand-blue);
+    border:none;
+    border-radius:0 6px 6px 0;
+    cursor:pointer;
+    color:#fff;
+    font-size:18px;
+}
+
+/* ---------- НАВИГАЦИЯ ---------- */
+.main-nav{
+    display:flex;
+    gap:20px;            /* расстояние между ссылками */
+    flex:0 0 auto;       /* ширина по содержимому */
+}
+
+.main-nav a{
+    color:#fff;
+    text-decoration:none;
+    font-size:16px;
+}
+
+.main-nav a:hover{
+    color:var(--brand-blue);
+}
+
+/* ---------- адаптив ---------- */
+@media(max-width:700px){
+  .search-bar{ max-width:none; }   /* на маленьких – на всю ширину */
+  .main-nav{ gap:12px; font-size:14px; }
+}
+
+
+/* =========================================================================
+   «🔥 Популярные товары» метка
+===========================================================================*/
+.section-title{
+  width:max-content; margin:0 auto 24px;
+  padding:6px 18px; font-size:20px; font-weight:700; color:#fff;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(39,168,255,.45);
+  border-radius:8px; backdrop-filter:blur(4px);
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  display:flex; align-items:center; gap:6px;
+}
+
+/* =========================================================================
+   PRODUCT-GRID  (+ карточка, fav / cart кнопки, анимации)
+===========================================================================*/
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:32px; justify-content:center;
+  padding:20px 0 60px;
+  max-width:1240px; margin:0 auto; padding-inline:20px;
+}
+
+/* карточка */
+.card{
+  background:rgba(2,11,25,.85);
+  border-radius:8px; box-shadow:0 2px 8px #0006;
+  overflow:hidden; display:flex; flex-direction:column;
+  height:520px; transition:transform .15s ease;
+}
+.card:hover{ transform:translateY(-4px); }
+
+/* “окно” изображения */
+.card-img{
+  flex:0 0 350px; background:#02101e;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; padding:15px; position:relative;
+}
+.card-img img{max-width:100%; max-height:100%; object-fit:contain; transition:transform .3s}
+.card-img:hover img{transform:scale(1.05)}
+
+/* кнопка-сердце */
+.fav-btn{
+    position:absolute; top:8px; right:8px;
+    width:32px; height:32px; line-height:30px;
+    font-size:22px;
+    border:none; border-radius:50%;
+    background:#0b1626;
+    color:#fff;                 /* ← белое сердце по-умолчанию */
+    cursor:pointer;
+    transition:transform .15s ease, color .25s;
+}
+.fav-btn:hover{transform:scale(1.15)}
+.fav-btn.active{color:#ff4974; animation:heart-pop .25s ease-out}
+
+/* тело */
+.card-body{flex:1; padding:12px 16px; display:flex; flex-direction:column}
+.card-title{font-size:17px; margin:0 0 6px; color:#fff}
+.card-desc{
+  font-size:13px; color:#9cb0c8; overflow:hidden;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+}
+
+/* футер */
+.card-footer{
+  border-top:1px solid #04182d; padding:10px 16px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.price{color:var(--brand-blue); font-weight:600}
+.cart-btn{
+  background:var(--brand-blue); border:none; border-radius:6px;
+  font-size:18px; width:36px; height:32px; cursor:pointer;
+  transition:transform .15s ease, background .3s;
+}
+.cart-btn:hover{transform:scale(1.12)}
+.cart-btn.clicked{animation:cart-bounce .4s ease, cart-flash .4s ease}
+
+/* ---------------- animations ---------------- */
+@keyframes heart-pop{
+  0%{transform:scale(.8)} 70%{transform:scale(1.3)} 100%{transform:scale(1)}
+}
+@keyframes cart-bounce{
+  0%{transform:translateY(0)}
+  30%{transform:translateY(-5px)}
+  60%{transform:translateY(0)}
+}
+@keyframes cart-flash{
+  0%,100%{background:var(--brand-blue)}
+  50%{background:#2cc4ff}
+}
+
+/* =========================================================================
+   CATALOG pop-up, MODAL, etc.
+   (оставлены без изменений, только цвета подтянуты к --brand-blue)
+===========================================================================*/
+.catalog-wrapper{position:relative; display:inline-block}
+.catalog-popup{
+  position:absolute; top:100%; left:0;
+  background:rgba(0,0,0,.95); color:#fff; padding:20px;
+  border-radius:10px; box-shadow:0 8px 16px rgba(0,0,0,.5);
+  display:none; z-index:2000; width:220px; animation:fadeIn .3s;
+}
+.catalog-popup h3{
+  color:var(--brand-blue); margin:0 0 10px; font-size:18px;
+  border-bottom:1px solid #444; padding-bottom:5px;
+}
+.catalog-popup ul{list-style:none; margin:0; padding:0}
+.catalog-popup li{padding:8px 0; cursor:pointer}
+.catalog-popup li:hover{color:var(--brand-blue)}
+
+/* ---------------- modal (коротко) ---------------- */
+/* ───────── modal – базовые стили ───────── */
+.modal-overlay{
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.60);
+  align-items:center; justify-content:center;
+  z-index:11000;
+}
+
+/* блокируем скролл у <html> и у <body>, пока открыт overlay */
+html.modal-open,
+body.modal-open{
+    overflow:hidden;
+    height:100%;            /* на случай тач-скролла в мобильных */
+}
+
+
+/* само «окно» */
+.modal{
+  background:#111;
+  padding:32px 36px;
+  border-radius:12px;
+  width:90%; max-width:420px;
+  color:#fff;
+  box-shadow:0 0 24px var(--brand-blue)66;
+  position:relative;
+  animation:modal-pop .35s ease;
+   z-index:11100;
+}
+
+@keyframes modal-pop{
+  0%   {transform:scale(.85); opacity:0}
+  100% {transform:scale(1);   opacity:1}
+}
+
+/* заголовок */
+.modal h2{
+  margin:0 0 24px;
+  font-size:22px;
+  color:var(--brand-blue);
+  text-align:center;
+  display:flex; gap:6px; justify-content:center;
+}
+
+/* поля ввода */
+.modal input{
+  width:100%;
+  padding:12px 14px;
+  margin:10px 0;
+  border:1px solid #444;
+  border-radius:6px;
+  background:#222;
+  color:#fff;
+  font-size:15px;
+  transition:border-color .2s;
+}
+.modal input:focus{border-color:var(--brand-blue); outline:none}
+
+/* кнопка */
+.modal button{
+  width:100%;
+  padding:12px 0;
+  margin-top:14px;
+  border:none;
+  border-radius:6px;
+  background:var(--brand-blue);
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+  transition:background .25s;
+}
+.modal button:hover{background:#0177d6}
+
+/* крестик */
+.close-btn{
+  position:absolute; top:10px; right:14px;
+  font-size:22px; cursor:pointer; color:#888;
+  transition:color .2s;
+}
+.close-btn:hover{color:#fff}
+
+/* «нет аккаунта?» */
+.switch-text{margin-top:14px; text-align:center; font-size:14px}
+.switch-text a{color:var(--brand-blue); text-decoration:none}
+
+/* ──────────────────────────────────────────────────────
+   MODAL ― неоновая рамка + мягкое свечение
+───────────────────────────────────────────────────────*/ч
+.modal{
+    position:relative;
+    z-index:1;
+    background:#111;
+    border-radius:10px;
+    box-shadow:0 0 20px #000 inset;          /* лёгкая внутренняя тень */
+}
+
+/* ① тонкая яркая рамка – как была */
+.modal::before{
+    content:"";
+    position:absolute; inset:0;
+    border-radius:inherit;
+    padding:2px;                               /* толщина */
+    background:linear-gradient(135deg,#068ff9 0%,#27a8ff 50%,#068ff9 100%);
+    -webkit-mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+    -webkit-mask-clip:content-box,border-box;
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    pointer-events:none;
+}
+
+/* ② внешний мягкий halo – ТОЛЬКО СНАРУЖИ! */
+.modal::after{
+    content:"";                               /* псевдо-элемент */
+    position:absolute; inset:0;
+    border-radius:inherit;
+    pointer-events:none;
+
+    /* три слоя box-shadow = плавное затухание */
+    box-shadow:
+        0 0 12px   2px rgba( 6,143,249,.60),
+        0 0 28px   6px rgba( 6,143,249,.35),
+        0 0 45px  14px rgba( 6,143,249,.15);
+
+    animation:neon-breathe 6s ease-in-out infinite;
+}
+
+
+/* лёгкое «дыхание» света */
+@keyframes neon-breathe{
+  0%,100%{ opacity:.55 }
+  50%   { opacity:.25 }
+}
+
+
+
+
+/* =========================================================================
+   ADAPTIVE
+===========================================================================*/
+@media(max-width:768px){
+  .header-inner{flex-direction:column; gap:10px}
+  .search-bar{margin:0; width:100%}
+  .main-nav{display:flex; justify-content:center; gap:10px}
+  .card-img{flex-basis:250px}
+  .card{height:420px}
+  .products-grid{gap:24px}
+}
+
+/* 1. когда шапка прилипла – растянутая строка-поиска */
+#mainHeader.sticky-top .search-bar{
+    flex:1 1 0;        /* занимает всё свободное */
+    max-width:720px;   /* шире, чем 500px из обычного состояния */
+    margin:0 40px;     /* чуть больше «воздуха» по краям */
+}
+
+/* 2. чуть крупнее сама кнопка-лупа, чтоб не «терялась» */
+#mainHeader.sticky-top .search-bar button{
+    flex:0 0 60px;     /* фикс-ширина под иконку */
+    font-size:20px;
+}
+
+.main-nav a.active{ color:#27a8ff; }

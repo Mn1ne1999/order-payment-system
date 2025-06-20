@@ -1,0 +1,134 @@
+/* -------------------------
+   products.css  (full)
+--------------------------*/
+
+/* ======= сетка товаров  ======= */
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); /* карточка стала уже */
+  gap:32px;
+  justify-content:center;
+  padding:20px 0 60px;
+  max-width:1400px;
+  margin:0 auto;
+}
+
+/* ======= карточка целиком ======= */
+.card{
+  background:rgba(2,11,25,.85);
+  border-radius:8px;
+  box-shadow:0 2px 8px #0006;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  height:520px;                      /* ниже, т.к. «окно» меньше */
+  transition:transform .15s ease;
+}
+.card:hover{ transform:translateY(-4px); }
+
+/* ─── верхнее «окно» под картинку ─── */
+.card-img{
+  flex:0 0 350px;                    /* вместо 160 px  */
+  background:#02101e;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  padding:15px;                       /* небольшой отступ внутри  */
+  position:relative;
+}
+.card-img img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  transition:transform .3s ease;
+}
+.card-img:hover img{ transform:scale(1.05); }
+
+/* сердце (избранное) */
+.fav-btn{
+  position:absolute; top:8px; right:8px;
+  background:#0b1626; border:none;
+  font-size:22px; cursor:pointer;
+  border-radius:50%; width:32px; height:32px;
+  line-height:30px;
+}
+.fav-btn.active{ color:#ff4974; }
+
+/* ─── текстовая часть ─── */
+.card-body{
+  flex:1 1 auto;
+  padding:12px 16px;
+  display:flex; flex-direction:column;
+}
+.card-title{
+  font-size:17px; margin:0 0 6px; color:#fff;
+}
+.card-desc{
+  font-size:13px; color:#9cb0c8;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+
+/* ─── футер ─── */
+.card-footer{
+  border-top:1px solid #04182d;
+  padding:10px 16px;
+  display:flex;
+  justify-content:space-between; align-items:center;
+}
+.price{ color:#00b7ff; font-weight:600; }
+.cart-btn{
+  back
+/* ─────────── КНОПКИ: общая анимация наведения ─────────── */
+/* ===== кнопки: ховеры ===== */
+.card .cart-btn,
+.card .fav-btn{
+  transition:transform .15s ease, background .25s;
+}
+.card .cart-btn:hover,
+.card .fav-btn:hover{
+  transform:scale(1.14);
+}
+
+/* ───────── ♥ избранное ───────── */
+@keyframes brand-heart{
+  0%  {transform:scale(.8)}
+  60% {transform:scale(1.35)}
+ 100% {transform:scale(1)}
+}
+.card .fav-btn.active{
+  color:#00b7ff;                /* фирменный голубой */
+  animation:brand-heart .25s ease-out;
+}
+
+/* ───────── 🛒 корзина ───────── */
+@keyframes cart-bounce{
+  0%{transform:translateY(0)}
+ 30%{transform:translateY(-5px)}
+ 60%{transform:translateY(0)}
+}
+@keyframes cart-flash{
+  0% {background:#00b7ff}
+ 50% {background:#22c7ff}
+100% {background:#00b7ff}
+}
+.card .cart-btn.clicked{
+  animation:cart-bounce .4s ease,
+            cart-flash  .4s ease;
+}
+
+/* базовый вид кнопки корзины (на всякий случай) */
+.card .cart-btn{
+  background:#00b7ff;
+  border:none;
+  border-radius:6px;
+  width:36px; height:32px;
+  font-size:18px;
+  cursor:pointer;
+}
+.card .cart-btn:hover{
+  background:#0094e0;
+}
